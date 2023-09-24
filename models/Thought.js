@@ -57,9 +57,6 @@ const thoughtSchema = new Schema(
   }
 );
 
-//Getter Method to format date
-thoughtSchema.get();
-
 //Virtual to count the number of reactions on a thought
 thoughtSchema.virtual('reactionCount').get(function () {
   return this.reactions.length;
