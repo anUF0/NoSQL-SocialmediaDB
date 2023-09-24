@@ -16,7 +16,7 @@ module.exports = {
   //Gets User based on id
   async getOneUser(req, res) {
     try {
-      const user = await User.findOne({ _id: params.userId }).populate({
+      const user = await User.findOne({ _id: req.params.userId }).populate({
         path: 'friends',
         select: '-__v',
       });
@@ -42,8 +42,8 @@ module.exports = {
   //Updates User based on Id
   async updateUser(req, res) {
     try {
-      const user = await User.findByIdAndUpdate(
-        { _id: params.userId },
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.userId },
         { $set: req.body },
         { runValidators: true, new: true }
       );
@@ -58,7 +58,7 @@ module.exports = {
   //Deletes User
   async deleteUser(req, res) {
     try {
-      const user = await User.findByIdAndDelete({ _id: params.userId });
+      const user = await User.findOneAndDelete({ _id: req.params.userId });
 
       if (!user) {
         res.status(404).json({ message: 'User not Found' });
@@ -71,6 +71,36 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-  async addFriend(req, res) {},
-  async removeFriend(req, res) {},
+  //Adds user with friendId from other user's array
+  async addFriend(req, res) {
+    try {
+      const user = await User.findOneAndUpdate(
+        { _id: params.userId },
+        { $addToSet: { friends: req.params.friendId } },
+        { new: true }
+      );
+      if (!user) {
+        res.status(404).json({ message: 'User not Found' });
+      }
+      res.json(user);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+  //Removes user with friendId from other user's array
+  async removeFriend(req, res) {
+    try {
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $pull: { friends: req.params.friendId } },
+        { new: true }
+      );
+      if (!user) {
+        res.status(404).json({ message: 'User not Found' });
+      }
+      res.json(user);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
 };

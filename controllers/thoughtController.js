@@ -55,7 +55,7 @@ module.exports = {
         { runValidators: true, new: true }
       );
       if (!thought) {
-        res.status(404).json({ message: 'Thought ID not found' });
+        res.status(404).json({ message: 'Thought Id not found' });
       }
       res.json(thought);
     } catch (err) {
@@ -69,18 +69,18 @@ module.exports = {
         _id: req.params.thoughtId,
       });
       if (!thought) {
-        res.status(404).json({ message: 'Thought ID not found' });
+        res.status(404).json({ message: 'Thought Id not found' });
       }
       //Removes thought from user's Thoughts Array
       const user = await User.findOneAndUpdate(
-        { _id: req.userId },
-        { $pull: { thoughts: _id } },
+        { thoughts: req.params.thoughtId },
+        { $pull: { thought: req.params.thoughtId } },
         { new: true }
       );
 
       if (!user) {
         return res.status(404).json({
-          message: 'Thought Posted but User not Found',
+          message: 'Thought Removed but User not Found',
         });
       }
       res.json(thought);
@@ -88,28 +88,35 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-  // Adds reaction to thouh
-  //WIP
+  // Adds reaction to thought
   async addReaction(req, res) {
     try {
-      const reaction = await Reaction.create(req.body);
-
-      //Pushes new thought into user's thoughts array
-      const user = await User.findOneAndUpdate(
-        { _id: req.userId },
-        { $push: { thoughts: _id } },
+      const thought = await Thought.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $addToSet: { reaction: req.body } },
         { runValidators: true, new: true }
       );
-
-      if (!user) {
-        return res.status(404).json({
-          message: 'Thought Posted but User not Found',
-        });
+      if (!thought) {
+        res.status(404).json({ message: 'Thought Id not found' });
       }
       res.json(thought);
     } catch (err) {
       res.status(500).json(err);
     }
   },
-  async removeReaction(req, res) {},
+  async removeReaction(req, res) {
+    try {
+      const thought = await Thought.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $pull: { reaction: { reactionId: req.params.reactionId } } },
+        { new: true }
+      );
+      if (!thought) {
+        res.status(404).json({ message: 'Thought Id not found' });
+      }
+      res.json(thought);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
 };
