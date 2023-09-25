@@ -4,10 +4,7 @@ module.exports = {
   //Gets all Users and populates with Friends
   async getUsers(req, res) {
     try {
-      const user = await User.find().populate({
-        path: 'friends',
-        select: '-__v',
-      });
+      const user = await User.find();
       res.json(user);
     } catch (err) {
       res.status(500).json(err);
@@ -16,13 +13,12 @@ module.exports = {
   //Gets User based on id
   async getOneUser(req, res) {
     try {
-      const user = await User.findOne({ _id: req.params.userId }).populate({
-        path: 'friends',
-        select: '-__v',
-      });
+      const user = await User.findOne({ _id: req.params.userId })
+        .select('-__v')
+        .populate('friends');
       if (!user) {
         return res.status(404).json({
-          message: 'User not Found',
+          message: 'User Id not Found',
         });
       }
       res.json(user);
@@ -48,7 +44,7 @@ module.exports = {
         { runValidators: true, new: true }
       );
       if (!user) {
-        res.status(404).json({ message: 'User not Found' });
+        res.status(404).json({ message: 'User Id not Found' });
       }
       res.json(user);
     } catch (err) {

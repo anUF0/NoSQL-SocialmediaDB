@@ -32,7 +32,7 @@ module.exports = {
       //Pushes new thought into user's thoughts array
       const user = await User.findOneAndUpdate(
         { _id: req.userId },
-        { $push: { thoughts: _id } },
+        { $push: { thoughts: req._id } },
         { runValidators: true, new: true }
       );
 
@@ -104,6 +104,7 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+  //Removes reaction, taking in both thoght and reaction's id
   async removeReaction(req, res) {
     try {
       const thought = await Thought.findOneAndUpdate(
