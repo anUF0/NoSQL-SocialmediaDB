@@ -14,8 +14,9 @@ module.exports = {
   async getOneUser(req, res) {
     try {
       const user = await User.findOne({ _id: req.params.userId })
-        .select('-__v')
-        .populate('friends');
+        //Populates user's thoughts and friends
+        .populate({ path: 'thoughts', select: '-__v' })
+        .populate({ path: 'friends', select: '-__v' });
       if (!user) {
         return res.status(404).json({
           message: 'User Id not Found',
@@ -71,7 +72,7 @@ module.exports = {
   async addFriend(req, res) {
     try {
       const user = await User.findOneAndUpdate(
-        { _id: params.userId },
+        { _id: req.params.userId },
         { $addToSet: { friends: req.params.friendId } },
         { new: true }
       );
