@@ -4,7 +4,7 @@ module.exports = {
   // Get all Thoughts
   async getThoughts(req, res) {
     try {
-      const thoughts = Thought.find();
+      const thoughts = await Thought.find();
       res.json(thoughts);
     } catch (err) {
       res.status(500).json(err);
@@ -19,7 +19,7 @@ module.exports = {
       if (!thought) {
         return res.status(404).json({ message: 'Thought ID not found' });
       }
-      res.json(course);
+      res.json(thought);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -31,8 +31,8 @@ module.exports = {
 
       //Pushes new thought into user's thoughts array
       const user = await User.findOneAndUpdate(
-        { _id: req.userId },
-        { $push: { thoughts: req._id } },
+        { _id: req.body.userId },
+        { $addToSet: { thoughts: thought._id } },
         { runValidators: true, new: true }
       );
 
