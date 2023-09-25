@@ -4,8 +4,8 @@ module.exports = {
   // Get all Thoughts
   async getThoughts(req, res) {
     try {
-      const thoughts = await Thought.find();
-      res.json(thoughts);
+      const thought = await Thought.find();
+      res.json(thought);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -74,7 +74,7 @@ module.exports = {
       //Removes thought from user's Thoughts Array
       const user = await User.findOneAndUpdate(
         { thoughts: req.params.thoughtId },
-        { $pull: { thought: req.params.thoughtId } },
+        { $pull: { thoughts: req.params.thoughtId } },
         { new: true }
       );
 
@@ -83,7 +83,7 @@ module.exports = {
           message: 'Thought Removed but User not Found',
         });
       }
-      res.json(thought);
+      res.json({ message: 'Though Successfully Removed' });
     } catch (err) {
       res.status(500).json(err);
     }
@@ -94,7 +94,7 @@ module.exports = {
       const thought = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
         { $addToSet: { reactions: req.body } },
-        { runValidators: true, new: true }
+        { new: true }
       );
       if (!thought) {
         res.status(404).json({ message: 'Thought Id not found' });
@@ -110,7 +110,7 @@ module.exports = {
       const thought = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
         { $pull: { reactions: { reactionId: req.params.reactionId } } },
-        { runValidators: true, new: true }
+        { new: true }
       );
       if (!thought) {
         res.status(404).json({ message: 'Thought Id not found' });
