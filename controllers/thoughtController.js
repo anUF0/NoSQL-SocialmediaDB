@@ -92,8 +92,8 @@ module.exports = {
   async addReaction(req, res) {
     try {
       const thought = await Thought.findOneAndUpdate(
-        { _id: req.params.userId },
-        { $addToSet: { reaction: req.body } },
+        { _id: req.params.thoughtId },
+        { $addToSet: { reactions: req.body } },
         { runValidators: true, new: true }
       );
       if (!thought) {
@@ -108,8 +108,8 @@ module.exports = {
   async removeReaction(req, res) {
     try {
       const thought = await Thought.findOneAndUpdate(
-        { _id: req.params.userId },
-        { $pull: { reaction: { reactionId: req.params.reactionId } } },
+        { _id: req.params.thoughtId },
+        { $pull: { reactions: { reactionId: req.params.reactionId } } },
         { new: true }
       );
       if (!thought) {
